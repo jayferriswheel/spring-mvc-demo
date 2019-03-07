@@ -1,45 +1,37 @@
 package com.carto.controller;
 
 import com.carto.entity.CommentBean;
-import com.carto.entity.Users;
-import com.carto.service.UsersService;
+import com.carto.service.CommentService;
+import com.carto.util.MyException;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
 import java.util.List;
 
 @Controller
 @RequestMapping("/home")
 public class HomeController {
     @Resource
-    private UsersService usersService;
+    private CommentService commentService;
 
-    @RequestMapping(value = "/hello", method = {RequestMethod.POST})
+    @RequestMapping(value = "/hello")
     @ResponseBody
-    public String hello() {
-        Users users = usersService.getUsersByUsername("larry");
-        return users.getPassword();
+    public String hello(@RequestParam(value = "name") String name) {
+        if (name.equals("larry")) {
+            throw new MyException();
+        }
+        return "hello " + name;
     }
-
 
     @CrossOrigin
     @RequestMapping(value = "/commentList", method = {RequestMethod.POST})
     @ResponseBody
-    public List<CommentBean> getCommentList() {
-        List<CommentBean> beans = new ArrayList<CommentBean>();
-        for (int i = 0; i < 5; i++) {
-            CommentBean commentBean = new CommentBean();
-            if (i == 1 || i == 2) {
-                commentBean.isMember = false;
-            }
-            beans.add(commentBean);
-        }
-
-        return beans;
+    public List<CommentBean> getCommentList(@RequestParam(value = "start") int start, @RequestParam(value = "end") int end, @RequestParam(value = "productId") String productId) {
+        return commentService.getCommentRange(productId, start, end);
     }
+
+
+
+
 }
