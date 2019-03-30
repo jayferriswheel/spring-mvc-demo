@@ -4,6 +4,8 @@ import com.carto.entity.CommentBean;
 import com.carto.mapper.CommentMapper;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.support.SqlSessionDaoSupport;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
 
 import javax.annotation.Resource;
@@ -12,7 +14,6 @@ import java.util.Map;
 
 @Repository
 public class CommentDao extends SqlSessionDaoSupport {
-
     @Resource
     public void setSqlSessionFactory(SqlSessionFactory sqlSessionFactory) {
         super.setSqlSessionFactory(sqlSessionFactory);
