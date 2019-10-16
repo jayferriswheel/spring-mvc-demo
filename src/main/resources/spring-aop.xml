@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="log" class="com.carto.aop.demo.LogAround"/>
+    <bean id="timeBook" class="com.carto.aop.demo.TimeBook"/>
+
+    <bean id="logProxy" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <!--拦截对象的接口-->
+        <property name="proxyInterfaces">
+            <value>com.carto.aop.demo.TimeBookInterface</value>
+        </property>
+
+        <!--拦截对象-->
+        <property name="target">
+            <ref bean="timeBook"/>
+        </property>
+
+        <property name="interceptorNames">
+            <list>
+                <value>log</value>
+            </list>
+        </property>
+    </bean>
+</beans>

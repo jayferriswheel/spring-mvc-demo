@@ -7,6 +7,7 @@ public class CommentBean {
     public String spec;
     public String desc;
     public String time;
+    public Byte score;
 
     public CommentBean() {
 //        userImg = "https://fb.blackfish.cn/fb/t1/G1/M00/01/65/CiAg21wtqg2IQI4NAAAFz8-WODMAAGGIAP_9dYAAAXn642.png";

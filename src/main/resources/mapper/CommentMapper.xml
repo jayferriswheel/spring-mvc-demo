@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.carto.mapper.CommentMapper">
+    <cache/>
     <resultMap id="Comment" type="com.carto.entity.CommentBean">
         <!--<id column="id" property="id" jdbcType="INTEGER"/>-->
         <result column="content" property="desc" jdbcType="VARCHAR"/>
         <result column="userImage" property="userImg" jdbcType="VARCHAR"/>
         <result column="nickname" property="userName" jdbcType="VARCHAR"/>
+        <result column="score" property="score" jdbcType="TINYINT"/>
     </resultMap>
     <!-- 查询指定区间的记录 -->
     <select id="selectRange" resultMap="Comment">
-        SELECT * FROM comment where #{2} > id
+        SELECT * FROM product_comment where #{2} > id
     </select>
 </mapper>

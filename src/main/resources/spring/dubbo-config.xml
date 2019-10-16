@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd">
+    <dubbo:application name="order-provider" owner="mic"/>
+
+    <dubbo:registry address="N/A"/>
+
+    <dubbo:protocol name="dubbo" port="20880"/>
+
+    <dubbo:service interface="com.carto.service.IOrderService" ref="orderService"/>
+
+    <bean id="orderService" class="com.carto.service.OrderServiceImpl"/>
+
+    <!--多协议支持-->
+    <dubbo:protocol name="hessian" port="8090" server="jetty"/>
+
+</beans>
