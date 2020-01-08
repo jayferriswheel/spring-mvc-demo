@@ -11,6 +11,7 @@ class Script<Event> {
 	// 一个标志位
 	private boolean ready = false;
 
+	// key-from  list-to，即list依赖于from
 	private final IdentityHashMap<EventHandler<Event>, List<EventHandler<Event>>> dependedHandlers = new IdentityHashMap<EventHandler<Event>, List<EventHandler<Event>>>();
 
 	synchronized EventHandlerGroup<Event> after(

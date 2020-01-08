@@ -22,16 +22,24 @@ class ScriptRuntimeBuilder<Event> {
 	}
 
 	private void preparePrototypes() {
-
 		/**
 		 * Copy depended event handler map from script map to avoid aside effect
 		 * to Script.
+		 *
+		 * dependedHandlerMap：依赖A的
 		 */
 		Map<EventHandler<Event>, List<EventHandler<Event>>> dependedHandlerMap = copyEventHandlerMap(script
 				.getDependedEventHandlers());
 		/**
 		 * Compute depending event handler map. We can compute only depending
 		 * count, but that is not the key to the performance.
+		 *
+		 * 注意这里做了一个转换，变成了key为handler，value为其依赖的handler list
+		 *
+		 * 想一想，依赖A的，和A依赖的，应该是可以快速取出的，这个下面用到哪个，就可以从哪里取
+		 * A可以执行，说明A依赖的都执行了
+		 *
+		 * dependingHandlerMap：A依赖的
 		 */
 		Map<EventHandler<Event>, List<EventHandler<Event>>> dependingHandlerMap = new HashMap<EventHandler<Event>, List<EventHandler<Event>>>();
 		for (EventHandler<Event> handler : dependedHandlerMap.keySet()) {

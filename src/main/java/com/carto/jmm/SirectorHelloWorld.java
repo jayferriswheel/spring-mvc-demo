@@ -24,10 +24,9 @@ public class SirectorHelloWorld {
         Callback<HelloWorldEvent> alertCallback = new AlertCallback();
 
         //编排事件处理器
-        sirector.begin(onceHandler).then(twiceHandler).then(threeTimesHandler);
-//        sirector.begin(onceHandler).then(twiceHandler);
-//        sirector.after(onceHandler).then(threeTimesHandler);
-//        sirector.after(twiceHandler, threeTimesHandler).then(fourTimesHandler);
+        sirector.begin(onceHandler).then(twiceHandler);
+        sirector.after(onceHandler).then(threeTimesHandler);
+        sirector.after(twiceHandler, threeTimesHandler).then(fourTimesHandler);
         sirector.ready();
 
         //同步发布事件
