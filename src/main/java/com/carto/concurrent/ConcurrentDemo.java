@@ -1,7 +1,6 @@
 package com.carto.concurrent;
 
 import com.google.common.collect.Lists;
-
 import org.apache.commons.lang.math.RandomUtils;
 import org.springframework.util.CollectionUtils;
 

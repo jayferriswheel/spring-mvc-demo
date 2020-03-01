@@ -1,6 +1,6 @@
 package com.carto.tree;
 
-import com.carto.leetcode.round1.TreeNode;
+import com.carto.leetcode.util.TreeNode;
 
 import java.util.ArrayList;
 import java.util.LinkedList;

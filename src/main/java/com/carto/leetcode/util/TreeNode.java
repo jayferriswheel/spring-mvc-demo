@@ -1,4 +1,4 @@
-package com.carto.leetcode.round1;
+package com.carto.leetcode.util;
 
 public class TreeNode {
     public int val;
