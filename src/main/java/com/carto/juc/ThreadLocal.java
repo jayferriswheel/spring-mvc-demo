@@ -46,6 +46,8 @@ import java.util.function.Supplier;
  *
  * @author Josh Bloch and Doug Lea
  * @since 1.2
+ *
+ * Important 一个ThreadLocal只能存储一个变量
  */
 public class ThreadLocal<T> {
     /**
@@ -168,6 +170,7 @@ public class ThreadLocal<T> {
     }
 
     /**
+     * 一个threadLocal应该只能有一种变量吧
      * Sets the current thread's copy of this thread-local variable
      * to the specified value.  Most subclasses will have no need to
      * override this method, relying solely on the {@link #initialValue}
@@ -210,8 +213,7 @@ public class ThreadLocal<T> {
      * @return the map
      */
     ThreadLocalMap getMap(Thread t) {
-//        return t.threadLocals;
-        return null; // 避免出错，上面才是正解
+        return t.threadLocals;
     }
 
     /**
@@ -222,7 +224,7 @@ public class ThreadLocal<T> {
      * @param firstValue value for the initial entry of the map
      */
     void createMap(Thread t, T firstValue) {
-//        t.threadLocals = new ThreadLocalMap(this, firstValue);
+        t.threadLocals = new ThreadLocalMap(this, firstValue);
     }
 
     /**

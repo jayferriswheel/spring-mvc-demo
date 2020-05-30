@@ -321,6 +321,7 @@ public class HashMap<K, V> extends AbstractMap<K, V>
      */
     static final int hash(Object key) {
         int h;
+        // 记一下hash的方法，这个就是为了hash的更分散而已
         return (key == null) ? 0 : (h = key.hashCode()) ^ (h >>> 16);
     }
 
@@ -663,15 +664,17 @@ public class HashMap<K, V> extends AbstractMap<K, V>
      * accord with initial capacity target held in field threshold.
      * Otherwise, because we are using power-of-two expansion, the
      * elements from each bin must either stay at same index, or move
-     * with a power of two offset in the new table.
+     * with a power of two offset in the new table.（这一句划重点）
      *
+     * resize后，要不index不变，要不就是index+
+     * 举个例子，hash=11,size=8,position=3；现在会size=16，position=11；就是说位置只有2个选择
      * @return the table
      */
     final Node<K, V>[] resize() {
         Node<K, V>[] oldTab = table;
         int oldCap = (oldTab == null) ? 0 : oldTab.length;
         int oldThr = threshold;
-        int newCap, newThr = 0;
+        int newCap, newThr = 0; // 计算新的table大小
         if (oldCap > 0) {
             if (oldCap >= MAXIMUM_CAPACITY) {
                 threshold = Integer.MAX_VALUE;
@@ -695,15 +698,16 @@ public class HashMap<K, V> extends AbstractMap<K, V>
         Node<K, V>[] newTab = (Node<K, V>[]) new Node[newCap];
         table = newTab;
         if (oldTab != null) {
+            // 一次转移的过程
             for (int j = 0; j < oldCap; ++j) {
                 Node<K, V> e;
                 if ((e = oldTab[j]) != null) {
                     oldTab[j] = null;
-                    if (e.next == null)
-                        newTab[e.hash & (newCap - 1)] = e;
-                    else if (e instanceof TreeNode)
+                    if (e.next == null)// e没有next，只转移e就可以了
+                        newTab[e.hash & (newCap - 1)] = e; // 一个取巧的位运算，hash超过newCap的时候，比较有用
+                    else if (e instanceof TreeNode)// e是treeNode，看懂了也会忘
                         ((TreeNode<K, V>) e).split(this, newTab, j, oldCap);
-                    else { // preserve order
+                    else { // preserve order 保持顺序
                         Node<K, V> loHead = null, loTail = null;
                         Node<K, V> hiHead = null, hiTail = null;
                         Node<K, V> next;
