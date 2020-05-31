@@ -1,5 +1,7 @@
 package com.carto.util;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -11,22 +13,39 @@ import java.util.Map;
 
 public class PrintUtils {
     public static void main(String[] args) throws Exception {
-        // 序列化会带来什么影响呢？ 序列化之后是不影响其类型的，可以看一下序列化的原理
-//        Map<String, String> map = new HashMap<>();
-        Map<String, String> map = new LinkedHashMap<>();
-        map.put("d", "1");
-        map.put("b", "2");
-        map.put("c", "3");
-
-        ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("template"));
-        oos.writeObject(map);
-        oos.close();
-        File file = new File("template");
-        ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file));
-        Map<String, String> newMap = (Map<String, String>) ois.readObject();
-        print(newMap);
+//        // 序列化会带来什么影响呢？ 序列化之后是不影响其类型的，可以看一下序列化的原理
+////        Map<String, String> map = new HashMap<>();
+//        Map<String, String> map = new LinkedHashMap<>();
+//        map.put("d", "1");
+//        map.put("b", "2");
+//        map.put("c", "3");
+//
+//        ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("template"));
+//        oos.writeObject(map);
+//        oos.close();
+//        File file = new File("template");
+//        ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file));
+//        Map<String, String> newMap = (Map<String, String>) ois.readObject();
+//        print(newMap);
+        getParamValue("70002", "$expid=");
     }
 
+
+    public static String getParamValue(String s, String param) {
+        if(StringUtils.isEmpty(s) ||StringUtils.isEmpty(param)){
+
+            return null;
+        }
+        int index = s.indexOf(param);
+        int end = s.length();
+        for(int i = index+param.length(); i < s.length(); i++) {
+            if(s.charAt(i) == '$') {
+                end = i;
+                break;
+            }
+        }
+        return s.substring(index+param.length(), end);
+    }
 
     public static <T> void print(List<T> list) {
         for (T t : list) {
