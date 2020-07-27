@@ -61,6 +61,11 @@
             <version>28.1-jre</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.esotericsoftware</groupId>
+            <artifactId>kryo-shaded</artifactId>
+            <version>4.0.1</version>
+        </dependency>
 
         <!-- spring核心包 -->
         <dependency>
