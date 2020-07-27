@@ -713,7 +713,7 @@ public class HashMap<K, V> extends AbstractMap<K, V>
                         Node<K, V> next;
                         do {
                             next = e.next;
-                            if ((e.hash & oldCap) == 0) {
+                            if ((e.hash & oldCap) == 0) {//判断index是在哪个区间，这个是还在oldCap区间
                                 if (loTail == null)
                                     loHead = e;
                                 else

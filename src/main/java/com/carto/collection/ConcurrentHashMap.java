@@ -959,16 +959,19 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
             Node<K,V> f; int n, i, fh;
             if (tab == null || (n = tab.length) == 0)
                 tab = initTable();
+            // 1. 该处无对象，尝试用CAS来添加
             else if ((f = tabAt(tab, i = (n - 1) & hash)) == null) { // 为空，尝试put
                 if (casTabAt(tab, i, null,
                         new Node<K,V>(hash, key, value, null))) // 此处体现了CAS，所以用了哪些方法完成同步，需要加上CAS
                     break;                   // no lock when adding to empty bin
             }
+            // 2. 不巧了，正在扩容，去帮忙扩容
             else if ((fh = f.hash) == MOVED) // 正在扩容，扩容时会放置一个标志位
                 tab = helpTransfer(tab, f); // 帮忙转移
             else {
+                // 3. 有对象的情况下，加锁处理
                 V oldVal = null;
-                synchronized (f) { // 加锁同步
+                synchronized (f) { // 加锁同步，分为链表和红黑树两种处理方式
                     if (tabAt(tab, i) == f) {
                         if (fh >= 0) {
                             binCount = 1;
@@ -1046,7 +1049,7 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
      * Implementation for the four public remove/replace methods:
      * Replaces node value with v, conditional upon match of cv if
      * non-null.  If resulting value is null, delete.
-     * 大致的步骤是一致的，没人就干，有人在搬家就帮忙，否则锁起来自己干
+     * 大致的步骤是一致的，没人就干，有人在搬家就帮忙，否则锁起来自己干（说得好，很有道理）
      */
     final V replaceNode(Object key, V value, Object cv) {
         int hash = spread(key.hashCode());
@@ -2315,7 +2318,7 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
     /**
      * Moves and/or copies the nodes in each bin to new table. See
      * above for explanation.
-     * 这个方法是多线程并发调用的
+     * 这个方法是多线程并发调用的，这个就是resize
      */
     private final void transfer(Node<K,V>[] tab, Node<K,V>[] nextTab) {
         int n = tab.length, stride;
@@ -2341,13 +2344,14 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
         for (int i = 0, bound = 0;;) { // 死循环开干
             Node<K,V> f; int fh;
             while (advance) {
-                int nextIndex, nextBound;
+                int nextIndex, nextBound; // 小于n，即老数组的大小，因为只有老数组需要处理
                 if (--i >= bound || finishing) // 这里会把advance置为false
                     advance = false;
                 else if ((nextIndex = transferIndex) <= 0) { // 处理完了，不用干了
                     i = -1;
                     advance = false;
                 }
+                // 这里会cas切换transferIndex，会减去stride，这样每一个线程就会分配其中一部分
                 else if (U.compareAndSwapInt
                         (this, TRANSFERINDEX, nextIndex,
                                 nextBound = (nextIndex > stride ?
@@ -2357,6 +2361,7 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
                     advance = false; // 已经分配到了桶数据去转移，先不推进，先去处理，所以没处理完之前都不会再来while里面领任务领
                 }
             }
+            // 判断已经完成了扩容，修改标识位
             if (i < 0 || i >= n || i + n >= nextn) {
                 int sc;
                 if (finishing) { // 完成扩容
@@ -2401,15 +2406,18 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
                             for (Node<K,V> p = f; p != lastRun; p = p.next) {
                                 int ph = p.hash; K pk = p.key; V pv = p.val;
                                 if ((ph & n) == 0)
+                                    // 这里生成了2个链表
                                     ln = new Node<K,V>(ph, pk, pv, ln);
                                 else
                                     hn = new Node<K,V>(ph, pk, pv, hn);
                             }
+                            // 所以这里直接set就可以
                             setTabAt(nextTab, i, ln);
                             setTabAt(nextTab, i + n, hn);
                             setTabAt(tab, i, fwd);
                             advance = true;
                         }
+                        // 红黑树的咱也看不懂
                         else if (f instanceof TreeBin) {
                             TreeBin<K,V> t = (TreeBin<K,V>)f;
                             TreeNode<K,V> lo = null, loTail = null;
