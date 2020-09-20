@@ -174,7 +174,7 @@ public class ReentrantLock implements Lock, java.io.Serializable {
          * acquire on failure.
          */
         final void lock() {
-            // 不公平的体现，因为没排队
+            // 不公平的体现，因为没排队，上来先抢一把试试
             if (compareAndSetState(0, 1))
                 setExclusiveOwnerThread(Thread.currentThread());
             else
@@ -193,6 +193,7 @@ public class ReentrantLock implements Lock, java.io.Serializable {
         private static final long serialVersionUID = -3000897897090466540L;
 
         final void lock() {
+            // 老老实实acquire
             acquire(1);
         }
 
@@ -204,7 +205,7 @@ public class ReentrantLock implements Lock, java.io.Serializable {
             final Thread current = Thread.currentThread();
             int c = getState();
             if (c == 0) {
-                // 判断是否有前继节点
+                // 判断是否有前继节点，保证了这个应该是第一个获取节点的线程
                 if (!hasQueuedPredecessors() &&
                         compareAndSetState(0, acquires)) {
                     setExclusiveOwnerThread(current);

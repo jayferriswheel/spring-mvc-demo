@@ -399,6 +399,7 @@ public class ThreadLocal<T> {
             // 这hash啥玩意？
             int i = key.threadLocalHashCode & (table.length - 1);
             Entry e = table[i];
+            // 看下它的hash冲突解决方法
             if (e != null && e.get() == key)
                 return e;
             else
@@ -408,6 +409,7 @@ public class ThreadLocal<T> {
         /**
          * Version of getEntry method for use when key is not found in
          * its direct hash slot.
+         * +1往后找，线性探测
          *
          * @param key the thread local object
          * @param i   the table index for key's hash code

@@ -173,6 +173,7 @@ public class CountDownLatch {
     /**
      * Causes the current thread to wait until the latch has counted down to
      * zero, unless the thread is {@linkplain Thread#interrupt interrupted}.
+     * 等待countdown到0
      *
      * <p>If the current count is zero then this method returns immediately.
      *

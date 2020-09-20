@@ -734,7 +734,10 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
      * when table is null, holds the initial table size to use upon
      * creation, or 0 for default. After initialization, holds the
      * next element count value upon which to resize the table.
-     * 这个是一个标志位，可以体现当前map状态
+     * 这个是一个标志位，可以体现当前map状态，多线程的共享变量
+     * 值为负数时：table正在初始化or扩容；
+     * -1：初始化
+     * -(1+扩容的线程数)：扩容
      */
     private transient volatile int sizeCtl;
 
@@ -958,7 +961,7 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
         for (Node<K,V>[] tab = table;;) {
             Node<K,V> f; int n, i, fh;
             if (tab == null || (n = tab.length) == 0)
-                tab = initTable();
+                tab = initTable();// 初始化table
             // 1. 该处无对象，尝试用CAS来添加
             else if ((f = tabAt(tab, i = (n - 1) & hash)) == null) { // 为空，尝试put
                 if (casTabAt(tab, i, null,
@@ -985,7 +988,7 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
                                         e.val = value;
                                     break;
                                 }
-                                // 加入链表
+                                // 加入链表，链表末尾
                                 Node<K,V> pred = e;
                                 if ((e = e.next) == null) {
                                     pred.next = new Node<K,V>(hash, key,
@@ -994,7 +997,7 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
                                 }
                             }
                         }
-                        else if (f instanceof TreeBin) {
+                        else if (f instanceof TreeBin) {// 树
                             Node<K,V> p;
                             binCount = 2;
                             if ((p = ((TreeBin<K,V>)f).putTreeVal(hash, key,
@@ -2319,6 +2322,7 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
      * Moves and/or copies the nodes in each bin to new table. See
      * above for explanation.
      * 这个方法是多线程并发调用的，这个就是resize
+     * nextTab是新数组
      */
     private final void transfer(Node<K,V>[] tab, Node<K,V>[] nextTab) {
         int n = tab.length, stride;
@@ -2405,7 +2409,7 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
                             }
                             for (Node<K,V> p = f; p != lastRun; p = p.next) {
                                 int ph = p.hash; K pk = p.key; V pv = p.val;
-                                if ((ph & n) == 0)
+                                if ((ph & n) == 0) // 还在原来的桶bucket
                                     // 这里生成了2个链表
                                     ln = new Node<K,V>(ph, pk, pv, ln);
                                 else

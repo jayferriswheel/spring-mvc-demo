@@ -52,7 +52,7 @@ import java.util.concurrent.locks.Condition;
  *     N = matrix.length;
  *     Runnable barrierAction =
  *       new Runnable() { public void run() { mergeRows(...); }};
- *     barrier = new CyclicBarrier(N, barrierAction);
+ *     barrier = new CyclicBarrier(N, barrierAction); // 这个类似到期后有一个动作要去触发
  *
  *     List<Thread> threads = new ArrayList<Thread>(N);
  *     for (int i = 0; i < N; i++) {
@@ -143,6 +143,7 @@ public class CyclicBarrier {
      * Number of parties still waiting. Counts down from parties to 0
      * on each generation.  It is reset to parties on each new
      * generation or when broken.
+     * 这个可以重置
      */
     private int count;
 
@@ -175,6 +176,7 @@ public class CyclicBarrier {
             throws InterruptedException, BrokenBarrierException,
             TimeoutException {
         final ReentrantLock lock = this.lock;
+        // lock方法不能放在try中，否则发生异常会释放锁
         lock.lock();
         try {
             final Generation g = generation;
@@ -192,6 +194,7 @@ public class CyclicBarrier {
             if (index == 0) {  // tripped
                 boolean ranAction = false;
                 try {
+                    // 到期的时候执行的动作
                     final Runnable command = barrierCommand;
                     // 这个是一个附加动作
                     if (command != null)
@@ -284,6 +287,7 @@ public class CyclicBarrier {
     /**
      * Waits until all {@linkplain #getParties parties} have invoked
      * {@code await} on this barrier.
+     * 等到所有的都结束，一起开始
      *
      * <p>If the current thread is not the last to arrive then it is
      * disabled for thread scheduling purposes and lies dormant until
