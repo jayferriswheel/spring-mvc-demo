@@ -277,6 +277,8 @@ public class ThreadLocal<T> {
      * WeakReferences for keys. However, since reference queues are not
      * used, stale entries are guaranteed to be removed only when
      * the table starts running out of space.
+     * 内存泄漏：
+     * 1、每一个线程有一个Map，整个Map持有了value，即使某一个ThreadLocal key失效了，但是value还是被强引用的
      */
     static class ThreadLocalMap {
 
@@ -294,6 +296,7 @@ public class ThreadLocal<T> {
              */
             Object value;
 
+            // key为一个ThreadLocal
             Entry(ThreadLocal<?> k, Object v) {
                 super(k);
                 value = v;
