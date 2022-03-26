@@ -323,6 +323,7 @@ public class HashMap<K, V> extends AbstractMap<K, V>
     static final int hash(Object key) {
         int h;
         // 记一下hash的方法，这个就是为了hash的更分散而已
+        // 比如表的界限就是10，但里面存储的是float小数，10.1，10.2这样，那我们的hashcode数字很大也没有，还是最后几位决定的，因此让高位也参与运算
         return (key == null) ? 0 : (h = key.hashCode()) ^ (h >>> 16);
     }
 
@@ -636,7 +637,7 @@ public class HashMap<K, V> extends AbstractMap<K, V>
                     if ((e = p.next) == null) {
                         p.next = newNode(hash, key, value, null);
                         if (binCount >= TREEIFY_THRESHOLD - 1) // -1 for 1st
-                            treeifyBin(tab, hash);
+                            treeifyBin(tab, hash); // 转为红黑树
                         break;
                     }
                     if (e.hash == hash &&

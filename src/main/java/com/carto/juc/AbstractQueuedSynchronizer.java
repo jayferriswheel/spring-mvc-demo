@@ -287,7 +287,7 @@ public abstract class AbstractQueuedSynchronizer
      * first in the queue. But being first does not guarantee success;
      * it only gives the right to contend.  So the currently released
      * contender thread may need to rewait.
-     *
+     * CLH变种，有后继指针，避免自旋
      * <p>To enqueue into a CLH lock, you atomically splice it in as new
      * tail. To dequeue, you just set the head field.
      * <pre>
@@ -625,6 +625,7 @@ public abstract class AbstractQueuedSynchronizer
 
     /**
      * Wakes up node's successor, if one exists.
+     * 唤醒后继节点
      *
      * @param node the node
      */
@@ -1481,6 +1482,7 @@ public abstract class AbstractQueuedSynchronizer
     /**
      * Queries whether any threads have been waiting to acquire longer
      * than the current thread.
+     * 寻找自己的前置节点
      *
      * <p>An invocation of this method is equivalent to (but may be
      * more efficient than):
